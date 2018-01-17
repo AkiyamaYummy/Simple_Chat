@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CHAT ROOM</title>
+	<style>
+		body{
+			background: hsl(0,0%,0%);
+			margin: 0px;
+			padding-top: 2px;
+			height: 100%;
+		}
+		body div{
+			height: 400px;
+			width: 300px;
+			background: hsl(0,0%,100%);
+			float: left;
+			margin-left: 5px;
+			margin-top: 5px;
+			border-radius: 10px;
+			overflow: hidden;
+		}
+		a{
+			color: black;
+			display: block;
+		}
+		#nickNameLine{
+			color: white;
+			background: hsl(0,0%,0%);
+			border-color: hsl(0,0%,50%);
+			border-width: 3px 4px 4px 3px;
+			width: 80%;
+			height: 30px;
+			font-size: 30px;
+			margin-left: 10%;
+			font-family: "宋体";
+		}
+		#groupNameLine{
+			color: white;
+			background: hsl(0,0%,0%);
+			border-color: hsl(0,0%,50%);
+			border-width: 3px 4px 4px 3px;
+			width: 80%;
+			height: 30px;
+			font-size: 30px;
+			margin-left: 10%;
+			font-family: "宋体";
+		}
+		#controlPanel{
+			overflow: hidden;
+			height: 200px;
+		}
+		#groupNameInputPanel{
+			overflow: hidden;
+			height: 200px;
+		}
+		#topButtonPanel{
+			height: 50px;
+			width: 290px;
+			margin-left: 7px;
+			margin-top: 7px;
+			border-radius: 0px;
+			overflow: hidden;
+		}
+		#topButtonPanel div{
+			float: left;
+			width: 142px;
+			height: 50px;
+			border-radius: 8px 8px 0px 0px;
+			background-color: hsl(0,0%,0%);
+			margin: 0px 2px 0px 0px;
+			cursor: pointer;
+		}
+		#groupButton{
+			background: url("group.png");
+			background-size: cover;
+			background-position: center;
+		}
+		#usersButton{
+			background: url("users.png");
+			background-size: cover;
+			background-position: center;
+		}
+		.listPanel{
+			margin-top: 4px;
+			margin-left: 2px;
+			height: 324px;
+			width: 280px;
+			overflow-y: scroll;
+			overflow-x: hidden;
+			padding-right: 40px;
+			color: white;
+		}
+		.listPanel div{
+			height: 50px;
+			width: 286px;
+			background: hsl(0,0%,0%);
+			margin-bottom: 3px;
+			margin-top: 0px;
+			border-radius: 0px;
+			cursor: pointer;
+			font-family: "宋体";
+		}
+		.listPanel div a1{
+			font-family: "楷体";
+			font-size: 13px;
+			font-weight: bold;
+			margin-top: 3px;
+			margin-left: 10px;
+			display: block;
+			position: absolute;
+			color: hsl(0,0%,70%);
+		}
+		.listPanel div a2{
+			font-size: 25px;
+			margin-top: 18px;
+			margin-left: 25px;
+			display: block;
+			position: absolute;
+		}
+		.listPanel div a3{
+			font-family: "楷体";
+			font-size: 13px;
+			font-weight: bold;
+			margin-top: 3px;
+			margin-left: 230px;
+			display: block;
+			position: absolute;
+			color: hsl(0,0%,70%);
+		}
+		.listPanel div a4{
+			font-size: 25px;
+			margin-top: 18px;
+			margin-left: 238px;
+			display: block;
+			position: absolute;
+		}
+		.chatPanel div0{
+			margin-top: 5px;
+			margin-left: 10px;
+			margin-bottom: 3px;
+			display: block;
+			height: 17px;
+			width: 17px;
+			background: url("close.png");
+			background-size: cover;
+			background-position: center;
+			border-radius: 10px;
+			cursor: pointer;
+			z-index: 11;
+		}
+		.chatPanel a1{
+			display: block;
+			position: absolute;
+			text-align: center;
+			width: 200px;
+			margin-top: 2px;
+			margin-left: 50px;
+			height: 20px;
+			z-index: 10;
+		}
+		.chatPanel div1{
+			position: absolute;
+			margin-top: 0px;
+			height: 270px;
+			width: 294px;
+			color: white;
+			display: block;
+			border-radius: 0;
+			padding: 0px;
+			margin-left: 3px;
+			overflow: hidden;
+		}
+		.chatPanel div1 div{
+			overflow-y: scroll;
+			overflow-x: hidden;
+			position: absolute;
+			margin-top: 0px;
+			height: 270px;
+			width: 294px;
+			color: white;
+			display: block;
+			border-radius: 0;
+			background: black;
+			margin-left: 0px;
+			padding-right: 15px;
+		}
+		.chatPanel div1 div p{
+			line-height: 110%;
+			margin: 5px 5px 5px 10px;
+			width: 290px;
+			display: block;
+		}
+		.chatPanel div2{
+			position: absolute;
+			margin-top: 270px;
+			margin-left: 3px;
+			width: 287px;
+			height: 2px;
+			display: block;
+			cursor: s-resize;
+		}
+		.chatPanel textarea{
+			margin-left: 2px;
+			margin-top: 272px;
+			width: 290px;
+			height: 84px;
+			border-radius: 0 0 8px 8px;
+			background-color: black;
+			color: white;
+			resize: none;
+			position: absolute;
+		}
+		.chatPanel div3{
+			display: block;
+			width: 20px;
+			height: 20px;
+			border-radius: 10px;
+			margin-left: 280px;
+			margin-top: 360px;
+			cursor: se-resize;
+		}
+		#mainMask{
+			position: fixed;
+			height: 100%;
+			width: 100%;
+			margin: 0;
+			opacity: 0;
+			z-index: -1;
+		}
+		nickname{
+			font-weight: bold;
+			color: #ff7e00;
+			font-size: 15px;
+		}
+		date{
+			color: #ff7e00;
+			font-size: 15px;
+		}
+		messagetext{
+			color: white;
+			font-size: 20px;
+			margin: 0;
+		}
+		messagesys{
+			font-size: 15px;
+			color: darkslateblue;
+		}
+	</style>
+</head>
+<body id="body">
+	<div id="mainMask" onclick="bodyOnclick()"></div>
+	<div id="controlPanel">
+		<a style="margin-left:10px;margin-top: 20%">INPUT YOUR NICKNAME:</a>
+		<input type="text" id="nickNameLine"
+			   onkeydown="nickNameLineOnkeyDown(event)"/>
+	</div>
+
+	<script>
+		var nickName = null,userID = null;
+		var messageSocket = null;
+		var S_PATH = window.location.host+'/examples/websocket/chat';
+		var groupPanel = null,usersPanel = null;
+		var groupIDs = null,userIDs = null,groupNames = null,userNames = null;
+		var topButtonPanel = null,G_U_side = 1,isGroupInput = 0;
+		var chatPanels = {},groupNameInputPanel = null,linkWith = {};
+		function connect(host) {
+		    var resSocket;
+            if ('WebSocket' in window) {
+                resSocket = new WebSocket(host);
+            } else if ('MozWebSocket' in window) {
+                resSocket = new MozWebSocket(host);
+            } else {
+                alert('抱歉，您的浏览器无法支持这个页面');
+                return;
+            }
+            resSocket.onopen = socketOnopen;
+            resSocket.onclose = socketOnclose;
+            resSocket.onmessage = socketOnmessage;
+            return resSocket;
+        }
+        function socketOnopen() {
+			messageSocket.send("USER "+nickName);
+        }
+        function socketOnclose() {
+            alert('断开与服务器的连接');
+        }
+        function socketOnmessage(message) {
+		    var str = message.data;
+			if(str.substr(0,4)==="LIST") {
+				updatacontrolPanel(JSON.parse(message.data.substr(5)));
+			}else if(str.substr(0,5)==="UFULL"){
+				alert("很抱歉，聊天室成员名额已满");
+			}else if(str.substr(0,5)==="GFULL"){
+				alert("很抱歉，房间分配名额已满");
+			}else if(str.substr(0,4)==="PUSH"){
+				var ops = str.split(" ");
+				if(!(chatPanels.hasOwnProperty(ops[1])&&chatPanels[ops[1]])){
+				    document.getElementById("body").appendChild(getNewChatPanel(ops[1],ops[2]));
+				    chatPanels[ops[1]] = true;
+				}
+			}else if(str.substr(0,4)==="TEXT"){
+                var ops = str.split(" ");
+                receiveMessage(ops[1],ops[2]);
+            }
+            //alert("message : "+str);
+        }
+        function getNewChatPanel(id,title) {
+			/*
+			<div class="chatPanel">
+				<a1>实例</a1>
+				<div0></div0>
+				<div1><div></div></div1>
+				<div2></div2>
+				<textarea></textarea>
+				<div3></div3>
+			</div>
+			 */
+			var res = document.createElement("div");
+			res.setAttribute("class","chatPanel");
+			res.setAttribute("id","chatPanel_"+id);
+			var a1 = createElementByTagAndId("a1","chatTitle_"+id);
+			a1.innerHTML = decode(title);
+			var div0 = createElementByTagAndId("div0","chatDiv0_"+id);
+            var div1 = createElementByTagAndId("div1","chatDiv1_"+id);
+            var div = createElementByTagAndId("div","chatOutput_"+id);
+            div1.appendChild(div);
+            var div2 = createElementByTagAndId("div2","chatDiv2_"+id);
+            var div3 = createElementByTagAndId("div3","chatDiv3_"+id);
+            var text = createElementByTagAndId("textarea","chatInput_"+id);
+            div0.setAttribute("onclick","closeChatPanel("+id+")");
+            text.setAttribute("onkeydown","sendMessage("+id+",event)");
+            res.appendChild(a1);
+            res.appendChild(div0);
+            res.appendChild(div1);
+            res.appendChild(div2);
+            res.appendChild(text);
+            res.appendChild(div3);
+            return res;
+        }
+        function sendMessage(id,e) {
+            var text = document.getElementById("chatInput_" + id);
+            var str = encode(text.value);
+		    if(e.keyCode === 13 && str !== "") {
+                messageSocket.send("TEXT "+id+
+					" <nickname>"+nickName+"</nickname>"+
+					"__<date>"+getTime()+"</date>"+
+					"<br><messagetext>"+str+"</messagetext>");
+                text.value = "";
+            }
+        }
+        function getTime() {
+            var today=new Date();
+            var h=today.getHours();
+            var m=today.getMinutes();
+            var s=today.getSeconds();
+            var M = (m<10?"0":"")+m,S = (s<10?"0":"")+s;
+            return h+":"+M+":"+S;
+        }
+        function receiveMessage(id,str) {
+			var output = document.getElementById("chatOutput_"+id);
+			if(output) {
+                var newp = document.createElement("p");
+                newp.innerHTML = decode(str);
+                output.appendChild(newp);
+                if(document.getElementById("llv"+id)){
+                    closeChatPanel(id);
+				}
+            }
+        }
+        function closeChatPanel(id) {
+		    var ctd = document.getElementById("chatPanel_"+id);
+		    document.getElementById("body").removeChild(ctd);
+			messageSocket.send("EXIT "+id);
+			chatPanels[id] = false;
+        }
+        function createElementByTagAndId(tag,id) {
+			var res = document.createElement(tag);
+			res.setAttribute("id",id);
+			return res;
+        }
+        function nickNameLineOnkeyDown(e) {
+			if(e.keyCode==13 && nickName==null && e.value!="") {
+			    nickName = encode(nickNameLine.value);
+                var ish = window.location.protocol == 'http:';
+                messageSocket = connect((ish?'ws://':'wss://')+S_PATH,-1);
+            }
+        }
+        function updatacontrolPanel(list) {
+		    //{"yourID":3,"grouplist":[],"userlist":[{"userID":3,"nickname":"看"},{"userID":4,"nickname":"都是"}]}
+			if(list.yourID == -1)return;
+            controlPanel.style.height = "400px";
+            userID = list.yourID;
+			topButtonPanel = getTopButtonPanel();
+			usersPanel = getUsersPanel(list.userlist);
+			groupPanel = getGroupPanel(list.grouplist);
+            changeSide(G_U_side);
+        }
+        function getTopButtonPanel() {
+			var ret = document.createElement("div");
+			ret.setAttribute("id","topButtonPanel");
+			var div1 = document.createElement("div");
+            div1.setAttribute("id","groupButton");
+            div1.setAttribute("onclick","changeSide(0)");
+            var div2 = document.createElement("div");
+            div2.setAttribute("id","usersButton");
+            div2.setAttribute("onclick","changeSide(1)");
+            ret.appendChild(div1);ret.appendChild(div2);
+            return ret;
+        }
+        function changeSide(side) {
+		    G_U_side = side;
+            controlPanel.innerHTML = "";
+            controlPanel.appendChild(topButtonPanel);
+			controlPanel.appendChild((side==0)?groupPanel:usersPanel);
+        }
+        function getUsersPanel(userlist) {
+			var ret = document.createElement("div");
+			ret.setAttribute("class","listPanel");
+			userIDs = new Array();
+			userNames = new Array();
+			for(i in userlist){
+				var item = getListItem("用户昵称",
+					decode(userlist[i].nickname),"编号",userlist[i].userID);
+				if(userlist[i].userID == userID)item.style.color = "hsl(0,0%,70%)";
+                item.setAttribute("onclick","itemOnclick("+i+",1)");
+                userIDs[i] = userlist[i].userID;
+                userNames[i] = userlist[i].nickname;
+				ret.appendChild(item);
+			}
+			return ret;
+        }
+        function getGroupPanel(grouplist) {
+            var ret = document.createElement("div");
+            ret.setAttribute("class","listPanel");
+            groupIDs = new Array();
+            groupNames = new Array();
+            for(i in grouplist){
+                var item = getListItem("聊天室名称",decode(grouplist[i].groupname)
+					,"人数",grouplist[i].numberofpeople);
+                item.setAttribute("onclick","itemOnclick("+i+",0)");
+                groupIDs[i]  = grouplist[i].groupID;
+                groupNames[i] = grouplist[i].groupName;
+                ret.appendChild(item);
+            }
+            return ret;
+        }
+        function getListItem(a1,a2,a3,a4) {
+            var ret = document.createElement("div");
+            var div1 = document.createElement("a1");
+            div1.innerHTML = a1;
+            var div2 = document.createElement("a2");
+            div2.innerHTML = a2;
+            var div3 = document.createElement("a3");
+            div3.innerHTML = a3;
+            var div4 = document.createElement("a4");
+            div4.innerHTML = a4;
+            ret.appendChild(div1);ret.appendChild(div2);
+            ret.appendChild(div3);ret.appendChild(div4);
+            return ret;
+        }
+        function itemOnclick(i,mode) {
+			if(mode == 0){
+				messageSocket.send("JOIN "+groupIDs[i]);
+			}else {
+				if(document.getElementById("lw"+userIDs[i]))return;
+			    messageSocket.send("LINK "+userIDs[i]+" "+userNames[i]);
+            }
+        }
+        function bodyOnclick() {
+			/*
+			<div id="controlPanel">
+				<a style="margin-left:10px;margin-top: 20%">INPUT YOUR NICKNAME:</a>
+				<input type="text" id="nickNameLine"
+					   onkeydown="nickNameLineOnkeyDown(event)"/>
+			</div>
+			 */
+			if(userID===null || isGroupInput === 1)return;
+			isGroupInput = 1;
+            groupNameInputPanel = document.createElement("div");
+            var label = document.createElement("a");
+            label.setAttribute("style","margin-left:10px;margin-top: 20%");
+            label.innerHTML = "CREATE A NEW GROUP NAMED:";
+            var inputLine = document.createElement("input");
+            inputLine.setAttribute("type","text");
+            inputLine.setAttribute("id","groupNameLine");
+            inputLine.setAttribute("onkeydown","groupNameLineOnkeyDown(event)");
+            groupNameInputPanel.appendChild(label);
+            groupNameInputPanel.appendChild(inputLine);
+            groupNameInputPanel.style.height = "200px";
+            document.getElementById("body").appendChild(groupNameInputPanel);
+        }
+        function groupNameLineOnkeyDown(e) {
+			if(e.keyCode===13 && groupNameLine.value!==""){
+			    var gname = encode(groupNameLine.value);
+			    messageSocket.send("NEWG "+gname);
+                isGroupInput = 0;
+                document.getElementById("body").removeChild(groupNameInputPanel);
+			}
+        }
+        function encode(str) {
+			return str.replace(/ /g,"_");
+        }
+        function decode(str) {
+			return str.replace(/_/g," ");
+        }
+	</script>
+</body>
+</html>
