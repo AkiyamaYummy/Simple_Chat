@@ -1,4 +1,4 @@
-package websocket.chat;
+
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -17,7 +17,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint(value = "/websocket/chat")
+@ServerEndpoint(value = "/server")
 public class ChatServer {
 	static PrintStream debug = System.out;
 	

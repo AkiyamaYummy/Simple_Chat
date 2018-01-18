@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html onselectstart="return false;">
 <head>
 <meta charset="UTF-8">
 <title>CHAT ROOM</title>
@@ -9,9 +9,12 @@
 			margin: 0px;
 			padding-top: 2px;
 			height: 100%;
+			font-family: "Microsoft YaHei";
+			overflow-x: hidden;
+			overflow-y: scroll;
 		}
 		body div{
-			height: 400px;
+			height: 395px;
 			width: 300px;
 			background: hsl(0,0%,100%);
 			float: left;
@@ -176,8 +179,8 @@
 			overflow-x: hidden;
 			position: absolute;
 			margin-top: 0px;
-			height: 270px;
-			width: 294px;
+			height: 100%;
+			width: 100%;
 			color: white;
 			display: block;
 			border-radius: 0;
@@ -188,14 +191,14 @@
 		.chatPanel div1 div p{
 			line-height: 110%;
 			margin: 5px 5px 5px 10px;
-			width: 290px;
+			width: 95%;
+			word-break:break-all;
 			display: block;
 		}
 		.chatPanel div2{
 			position: absolute;
 			margin-top: 270px;
-			margin-left: 3px;
-			width: 287px;
+			width: 300px;
 			height: 2px;
 			display: block;
 			cursor: s-resize;
@@ -203,7 +206,7 @@
 		.chatPanel textarea{
 			margin-left: 2px;
 			margin-top: 272px;
-			width: 290px;
+			width: 288px;
 			height: 84px;
 			border-radius: 0 0 8px 8px;
 			background-color: black;
@@ -215,7 +218,6 @@
 			display: block;
 			width: 20px;
 			height: 20px;
-			border-radius: 10px;
 			margin-left: 280px;
 			margin-top: 360px;
 			cursor: se-resize;
@@ -231,7 +233,8 @@
 		nickname{
 			font-weight: bold;
 			color: #ff7e00;
-			font-size: 15px;
+			font-size: 17px;
+			font-family: "黑体";
 		}
 		date{
 			color: #ff7e00;
@@ -245,25 +248,30 @@
 		messagesys{
 			font-size: 15px;
 			color: darkslateblue;
+			font-family: "宋体";
 		}
 	</style>
 </head>
-<body id="body">
+<body id="body" onmouseup="bodyOnmouseup()" onmousemove="bodyOnmousemove(event)">
 	<div id="mainMask" onclick="bodyOnclick()"></div>
 	<div id="controlPanel">
 		<a style="margin-left:10px;margin-top: 20%">INPUT YOUR NICKNAME:</a>
 		<input type="text" id="nickNameLine"
 			   onkeydown="nickNameLineOnkeyDown(event)"/>
 	</div>
-
+	
 	<script>
 		var nickName = null,userID = null;
 		var messageSocket = null;
-		var S_PATH = window.location.host+'/examples/websocket/chat';
+		var S_PATH = window.location.host+'/chat/server';
 		var groupPanel = null,usersPanel = null;
 		var groupIDs = null,userIDs = null,groupNames = null,userNames = null;
 		var topButtonPanel = null,G_U_side = 1,isGroupInput = 0;
 		var chatPanels = {},groupNameInputPanel = null,linkWith = {};
+		var CHATPANELMINSIZE = {x:150,y:200},CHATPANELMAXSIZE = {x:800,y:800};
+		var SUBPANELMINHEIGHT = 0.2,SUBPANELMAXHEIGHT = 0.8,CHATPANELBLOCKH = 41,CHATPANELBLOCKWU = 6,CHATPANELBLOCKWD = 12;
+		var resizeMode = -1,resizeID = -1;
+		var panelSizeBefore = {};
 		function connect(host) {
 		    var resSocket;
             if ('WebSocket' in window) {
@@ -329,7 +337,8 @@
             var div3 = createElementByTagAndId("div3","chatDiv3_"+id);
             var text = createElementByTagAndId("textarea","chatInput_"+id);
             div0.setAttribute("onclick","closeChatPanel("+id+")");
-            text.setAttribute("onkeydown","sendMessage("+id+",event)");
+            text.setAttribute("onkeyup","sendMessage("+id+",event)");
+			setResize(id,div2,div3);
             res.appendChild(a1);
             res.appendChild(div0);
             res.appendChild(div1);
@@ -338,10 +347,133 @@
             res.appendChild(div3);
             return res;
         }
+        function setResize(id,div2,div3){
+	    	div2.setAttribute("onmousedown","resizeMousedown(0,"+id+")");
+	    	div3.setAttribute("onmousedown","resizeMousedown(1,"+id+")");
+		}
+        function bodyOnmousemove(e){
+			if(resizeMode === 0){
+			    resize0(resizeID,getMousePosi(e));
+			}else if(resizeMode === 1){
+                resize1(resizeID,getMousePosi(e));
+			}
+		}
+		function resizeMousedown(m,id) {
+			resizeMode = m;
+			resizeID = id;
+			if(!panelSizeBefore.hasOwnProperty(id))getPanelSizeBefore(id,3);
+        }
+		function bodyOnmouseup() {
+			resizeMode = -1;
+        }
+        function resize0(id,posi) {
+        	if(!panelSizeBefore.hasOwnProperty(id))return;
+        	var panelM = document.getElementById("chatPanel_"+id);
+            var panelU = document.getElementById("chatDiv1_"+id);
+            var panelD = document.getElementById("chatInput_"+id);
+            var panelL = document.getElementById("chatDiv2_"+id);
+            var panelV = document.getElementById("chatDiv3_"+id);
+            var label = document.getElementById("chatTitle_"+id);
+            
+            posi.y = Math.max(posi.y,panelU.offsetTop+panelSizeBefore[id].VH*SUBPANELMINHEIGHT);
+            posi.y = Math.min(posi.y,panelU.offsetTop+panelSizeBefore[id].VH*SUBPANELMAXHEIGHT);
+            
+            panelU.style.height = posi.y-panelU.offsetTop+"px";
+            panelL.style.marginTop = posi.y-panelU.offsetTop+"px";
+            panelD.style.marginTop = posi.y-panelU.offsetTop+2+"px";
+            panelD.style.height = panelSizeBefore[id].VH-panelU.offsetHeight+"px";
+            
+            getPanelSizeBefore(id,1);
+        }
+        function resize1(id,posi) {
+            if(!panelSizeBefore.hasOwnProperty(id))return;
+            var panelM = document.getElementById("chatPanel_"+id);
+            var panelU = document.getElementById("chatDiv1_"+id);
+            var panelD = document.getElementById("chatInput_"+id);
+            var panelL = document.getElementById("chatDiv2_"+id);
+            var panelV = document.getElementById("chatDiv3_"+id);
+            var label = document.getElementById("chatTitle_"+id);
+            
+            posi.y = Math.min(posi.y,CHATPANELMAXSIZE.y+panelM.offsetTop-15);
+            posi.y = Math.max(posi.y,CHATPANELMINSIZE.y+panelM.offsetTop-15);
+            posi.x = Math.min(posi.x,CHATPANELMAXSIZE.x+panelM.offsetLeft-20);
+            posi.x = Math.max(posi.x,CHATPANELMINSIZE.x+panelM.offsetLeft-20);
+            
+            panelV.style.marginTop = posi.y-panelU.offsetTop+"px";
+            panelV.style.marginLeft = posi.x-panelM.offsetLeft+"px";
+            
+            panelM.style.height = posi.y-panelM.offsetTop+15+"px";
+            panelM.style.width = posi.x-panelM.offsetLeft+20+"px";
+            
+            label.style.width = panelM.offsetWidth*0.66+"px";
+            label.style.marginLeft = panelM.offsetWidth*0.17+"px";
+            
+            panelU.style.height = (panelM.offsetHeight-CHATPANELBLOCKH)*panelSizeBefore[id].UP+"px";
+            panelU.style.width = panelM.offsetWidth-CHATPANELBLOCKWU+"px";
+            
+            panelD.style.height = (panelM.offsetHeight-CHATPANELBLOCKH)*panelSizeBefore[id].DP+"px";
+            panelD.style.width = panelM.offsetWidth-CHATPANELBLOCKWD+"px";
+            panelD.style.marginTop = panelU.offsetHeight+2+"px";
+            
+            panelL.style.width = panelM.offsetWidth+"px";
+            panelL.style.marginTop = panelU.offsetHeight+"px";
+            
+            getPanelSizeBefore(id,2);
+        }
+        function getPanelSizeBefore(id,mode) {
+        	if(!panelSizeBefore.hasOwnProperty(id))panelSizeBefore[id] = {};
+        	
+        	var panelM = document.getElementById("chatPanel_"+id);
+            var panelU = document.getElementById("chatDiv1_"+id);
+            var panelD = document.getElementById("chatInput_"+id);
+            
+            var heightM = panelM.offsetHeight;
+            var heightU = panelU.offsetHeight;
+            var heightD = panelD.offsetHeight;
+        	
+            if((mode|1) !== 0)panelSizeBefore[id].VH = heightM-CHATPANELBLOCKH;
+            if((mode|2) !== 0){
+            	panelSizeBefore[id].UP = heightU/(heightM-CHATPANELBLOCKH);
+            	panelSizeBefore[id].DP = 1-panelSizeBefore[id].UP;
+            }
+        }
+        function getMousePosi(e) {
+            var scroll = getScroll(),client = getClient();
+            return {
+                x:e.clientX+scroll.x-client.x,
+                y:e.clientY+scroll.y-client.y
+            };
+        }
+        function getScroll(){
+            var scrollTop = 0,scrollLeft = 0;
+            if(document.documentElement&&document.documentElement.scrollTop)
+                scrollTop=document.documentElement.scrollTop;
+            else if(document.body)
+                scrollTop=document.body.scrollTop;
+            if(document.documentElement&&document.documentElement.scrollLeft)
+                scrollLeft=document.documentElement.scrollLeft;
+            else if(document.body)
+                scrollLeft=document.body.scrollLeft;
+            return {x:scrollLeft,y:scrollTop};
+        }
+        function getClient() {
+            var clientTop = 0,clientLeft = 0;
+            if(document.documentElement&&document.documentElement.clientTop)
+                clientTop=document.documentElement.clientTop;
+            else if(document.body)
+                clientTop=document.body.clientTop;
+            if(document.documentElement&&document.documentElement.clientLeft)
+                clientLeft=document.documentElement.clientLeft;
+            else if(document.body)
+                clientLeft=document.body.clientLeft;
+            return {x:clientLeft,y:clientTop};
+        }
         function sendMessage(id,e) {
             var text = document.getElementById("chatInput_" + id);
-            var str = encode(text.value);
-		    if(e.keyCode === 13 && str !== "") {
+            if(e.keyCode === 13 && text.value==="\n"){
+                text.value = "";
+			} else if (e.keyCode === 13 && !e.shiftKey) {
+                var str = encode(text.value.replace(/\n/g,"<br>"));
                 messageSocket.send("TEXT "+id+
 					" <nickname>"+nickName+"</nickname>"+
 					"__<date>"+getTime()+"</date>"+
@@ -362,10 +494,12 @@
 			if(output) {
                 var newp = document.createElement("p");
                 newp.innerHTML = decode(str);
+                newp.setAttribute("name","chatText_"+id);
                 output.appendChild(newp);
                 if(document.getElementById("llv"+id)){
                     closeChatPanel(id);
 				}
+				output.scrollTo(0,output.scrollHeight);
             }
         }
         function closeChatPanel(id) {
