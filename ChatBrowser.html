@@ -261,6 +261,13 @@
 	</div>
 	
 	<script>
+	
+	/*
+		Because time is tight, the task is heavy.
+		I did not order the function.
+		Sorry about that.
+		
+	*/
 		var nickName = null,userID = null;
 		var messageSocket = null;
 		var S_PATH = window.location.host+'/chat/server';
@@ -272,7 +279,7 @@
 		var SUBPANELMINHEIGHT = 0.2,SUBPANELMAXHEIGHT = 0.8,CHATPANELBLOCKH = 41,CHATPANELBLOCKWU = 6,CHATPANELBLOCKWD = 12;
 		var resizeMode = -1,resizeID = -1;
 		var panelSizeBefore = {};
-		function connect(host) {
+		function connect(host) {						//Return a connected websocket.
 		    var resSocket;
             if ('WebSocket' in window) {
                 resSocket = new WebSocket(host);
@@ -287,13 +294,13 @@
             resSocket.onmessage = socketOnmessage;
             return resSocket;
         }
-        function socketOnopen() {
+        function socketOnopen() {						//Send "USER"
 			messageSocket.send("USER "+nickName);
         }
         function socketOnclose() {
             alert('断开与服务器的连接');
         }
-        function socketOnmessage(message) {
+        function socketOnmessage(message) {				//Category discussion and processing orders.
 		    var str = message.data;
 			if(str.substr(0,4)==="LIST") {
 				updatacontrolPanel(JSON.parse(message.data.substr(5)));
@@ -313,8 +320,10 @@
             }
             //alert("message : "+str);
         }
-        function getNewChatPanel(id,title) {
+        function getNewChatPanel(id,title) {			//Create a new chat panel.
 			/*
+			demo : 
+			
 			<div class="chatPanel">
 				<a1>实例</a1>
 				<div0></div0>
@@ -347,7 +356,7 @@
             res.appendChild(div3);
             return res;
         }
-        function setResize(id,div2,div3){
+        function setResize(id,div2,div3){				//Set the drag to change the size.
 	    	div2.setAttribute("onmousedown","resizeMousedown(0,"+id+")");
 	    	div3.setAttribute("onmousedown","resizeMousedown(1,"+id+")");
 		}
@@ -366,7 +375,7 @@
 		function bodyOnmouseup() {
 			resizeMode = -1;
         }
-        function resize0(id,posi) {
+        function resize0(id,posi) {						//Respond to the div in the lower right corner of the chat panel.
         	if(!panelSizeBefore.hasOwnProperty(id))return;
         	var panelM = document.getElementById("chatPanel_"+id);
             var panelU = document.getElementById("chatDiv1_"+id);
@@ -385,7 +394,7 @@
             
             getPanelSizeBefore(id,1);
         }
-        function resize1(id,posi) {
+        function resize1(id,posi) {						//About the horizontal line of the chat panel.
             if(!panelSizeBefore.hasOwnProperty(id))return;
             var panelM = document.getElementById("chatPanel_"+id);
             var panelU = document.getElementById("chatDiv1_"+id);
@@ -420,7 +429,7 @@
             
             getPanelSizeBefore(id,2);
         }
-        function getPanelSizeBefore(id,mode) {
+        function getPanelSizeBefore(id,mode) {			//Get the message used to change the size.
         	if(!panelSizeBefore.hasOwnProperty(id))panelSizeBefore[id] = {};
         	
         	var panelM = document.getElementById("chatPanel_"+id);
@@ -468,7 +477,7 @@
                 clientLeft=document.body.clientLeft;
             return {x:clientLeft,y:clientTop};
         }
-        function sendMessage(id,e) {
+        function sendMessage(id,e) {					//Send a message when press Enter.
             var text = document.getElementById("chatInput_" + id);
             if(e.keyCode === 13 && text.value==="\n"){
                 text.value = "";
@@ -489,7 +498,7 @@
             var M = (m<10?"0":"")+m,S = (s<10?"0":"")+s;
             return h+":"+M+":"+S;
         }
-        function receiveMessage(id,str) {
+        function receiveMessage(id,str) {				//Let the message appear where it should appear.
 			var output = document.getElementById("chatOutput_"+id);
 			if(output) {
                 var newp = document.createElement("p");

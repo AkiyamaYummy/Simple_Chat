@@ -16,7 +16,21 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-
+/*
+ * class ChatServer
+ * 
+ * Used to forward data from the browser.
+ * 
+ * Variable explanation:
+ * CMDS(String[]) : 	Store instruction set.
+ * COPS(String[]) : 	Saves a regular expression that determines 
+ * 						whether a command is valid or not.
+ * connections(Set) : 	Static.Save all connected ChatServer objects.
+ * groups(Map) : 		Static.Save all group ids with their group
+ * 						name and number of members.
+ * joinedGroups(Set) : 	Save all the groups that this user has joined.
+ * 
+ */
 @ServerEndpoint(value = "/server")
 public class ChatServer {
 	static PrintStream debug = System.out;
@@ -39,7 +53,7 @@ public class ChatServer {
     		"EXIT [0-9]+",
     		"TEXT [0-9]+ [^ ]+"
     };
-    private static final boolean isCmd(String str){
+    private static final boolean isCmd(String str){		//Judge whether a command is a valid regular expression.
 	    for(int i=0;i<CMDS.length;i++){
 	    	Pattern pattern = Pattern.compile(COPS[i]);
 	    	Matcher matcher = pattern.matcher(str);
@@ -47,7 +61,7 @@ public class ChatServer {
 	    }
 	    return false;
     }
-    private int newUID(){
+    private int newUID(){								//Get a new user ID.
     	if(UID_SET == null){
     		UID_SET = new Boolean[MAX_U];
     		for(int i=0;i<MAX_U;i++)UID_SET[i] = false;
@@ -58,7 +72,7 @@ public class ChatServer {
     	}
     	return -1;
     }
-    private int newGID(){
+    private int newGID(){								//Get a new group ID.
     	if(GID_SET == null){
     		GID_SET = new Boolean[MAX_G];
     		for(int i=0;i<MAX_G;i++)GID_SET[i] = false;
@@ -91,7 +105,7 @@ public class ChatServer {
     }
 
     @OnMessage
-    public void OnMessage(String message) {
+    public void OnMessage(String message) {				//Category discussion and processing orders.
     	debug.println("Message : "+message);
     	if(!isCmd(message)){
     		debug.println("ban : "+message);
@@ -162,7 +176,7 @@ public class ChatServer {
     	t.printStackTrace();
     }
     
-    private static void sendList(){
+    private static void sendList(){						//Send the JSON string of the user list and group list.
     	broadcast("_");
     	for (ChatServer client : connections) {
             try {
@@ -186,7 +200,7 @@ public class ChatServer {
         }
     }
     
-    static private String getGroupStr(){
+    static private String getGroupStr(){				//Get the JSON string of the group list.
     	int con = 0;
     	Object[][] os = new Object[MAX_G][3];
     	for(Integer i : groups.keySet())os[con++][0] = i;
@@ -197,7 +211,6 @@ public class ChatServer {
     	}
     	String res = "[";
     	for(int i=0;i<con;i++){
-    		//"groupname":"Ü³ÄãÂè","numberofpeople":3,"groupID":1
 			res += "{";
     		res += "\"groupname\":\""+os[i][1]+"\","+
     			   "\"numberofpeople\":"+os[i][2]+","+
@@ -207,7 +220,7 @@ public class ChatServer {
     	res += "]";
     	return res;
     }
-    static private String getUserStr(){
+    static private String getUserStr(){					//Get the JSON string of the user list.
     	String res = "["; boolean has = false;
     	for(ChatServer client : connections){
     		//userID:10,nickname:"ÕÅÈý"
@@ -236,7 +249,7 @@ public class ChatServer {
     	}
     }
     
-    public boolean send(String msg){
+    public boolean send(String msg){				//Send message to this user.
     	try {
     		synchronized (this) {
     			this.session.getBasicRemote().sendText(msg);
@@ -254,7 +267,7 @@ public class ChatServer {
     	return false;
     }
     
-    private static void broadcast(String msg) {
+    private static void broadcast(String msg) {		//Send message to all users.
     	debug.println("broadcast : "+msg);
         for (ChatServer client : connections) {
             try {
@@ -271,7 +284,6 @@ public class ChatServer {
                     client.session.close();
                 } catch (IOException e1) {
                 	debug.println("err2 : "+e1.getMessage());
-                    // Ignore
                 }
             }
         }
